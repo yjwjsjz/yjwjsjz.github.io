@@ -18,7 +18,17 @@ import HeaderLink from './HeaderLink.astro';
 		<div class="pill">
 			<HeaderLink href="/">首页</HeaderLink>
 			<HeaderLink href="/blog">文章</HeaderLink>
-			<HeaderLink href="/about">关于</HeaderLink>
+			<HeaderLink href="/notes">手记</HeaderLink>
+			<HeaderLink href="/says">思考</HeaderLink>
+			<HeaderLink href="/timeline">时光</HeaderLink>
+			<details class="more">
+				<summary>更多</summary>
+				<div class="menu">
+					<a href="/about">关于</a>
+					<a href="/friends">友链</a>
+					<a href="/guestbook">留言板</a>
+				</div>
+			</details>
 		</div>
 		<div class="nav-right">
 			<button id="theme-toggle" aria-label="切换夜间模式" title="切换夜间模式">
@@ -113,6 +123,14 @@ import HeaderLink from './HeaderLink.astro';
 	document.addEventListener('astro:after-swap', () => {
 		giscusSynced = false;
 	});
+	// 点击下拉菜单以外的地方时收起「更多」
+	document.addEventListener('click', (event) => {
+		document.querySelectorAll('details.more[open]').forEach((d) => {
+			if (!(event.target instanceof Element) || !d.contains(event.target)) {
+				d.removeAttribute('open');
+			}
+		});
+	});
 </script>
 <style>
 	header {
@@ -162,6 +180,66 @@ import HeaderLink from './HeaderLink.astro';
 	.pill a.active {
 		color: var(--accent-text, var(--accent));
 		font-weight: 700;
+	}
+	.more {
+		position: relative;
+	}
+	.more summary {
+		list-style: none;
+		cursor: pointer;
+		padding: 0.32em 0.85em;
+		border-radius: 999px;
+		color: rgb(var(--gray-dark));
+		font-size: 0.95em;
+		transition: background-color 0.15s ease;
+		user-select: none;
+	}
+	.more summary::-webkit-details-marker {
+		display: none;
+	}
+	.more summary:hover {
+		background: rgba(var(--gray-light), 0.6);
+	}
+	.more .menu {
+		position: absolute;
+		top: calc(100% + 0.6em);
+		right: 0;
+		min-width: 7.5em;
+		display: flex;
+		flex-direction: column;
+		padding: 0.35em;
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		border-radius: 14px;
+		background: var(--bg-blur);
+		-webkit-backdrop-filter: blur(12px) saturate(1.6);
+		backdrop-filter: blur(12px) saturate(1.6);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	}
+	.more .menu a {
+		padding: 0.42em 0.9em;
+		border-radius: 10px;
+		font-size: 0.92em;
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+	}
+	.more .menu a:hover {
+		background: rgba(var(--gray-light), 0.6);
+	}
+	@media (max-width: 640px) {
+		.pill {
+			max-width: calc(100vw - 7.5em);
+			overflow-x: auto;
+			scrollbar-width: none;
+		}
+		.pill::-webkit-scrollbar {
+			display: none;
+		}
+		/* 滚动容器会裁剪绝对定位子元素,菜单改 fixed 逃逸 */
+		.more .menu {
+			position: fixed;
+			top: 3.9rem;
+			right: 0.8em;
+		}
 	}
 	.nav-right {
 		display: flex;

@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Page from '../../layouts/Page.astro';
+
+const notes = (await getCollection('notes')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+function excerpt(body: string): string {
+	const text = body.replace(/[#>*`\[\]]/g, '').trim().replace(/\s+/g, ' ');
+	return text.length > 72 ? text.slice(0, 72) + '……' : text;
+}
+---
+
+<Page title="手记 · WuhuKaitou 的博客" description="生活向短文:折腾记录、深夜运维、碎碎念">
+	<h1 class="page-title">手记</h1>
+	<p class="page-desc">比文章随意,比说说啰嗦——记一些当下的事。</p>
+	<ol class="note-list">
+		{
+			notes.map((note) => (
+				<li>
+					<a href={`/notes/${note.id}/`}>
+						<p class="note-meta">
+							<FormattedDate date={note.data.pubDate} />
+							{note.data.mood && <span class="tag">心情 · {note.data.mood}</span>}
+							{note.data.weather && <span class="tag">天气 · {note.data.weather}</span>}
+						</p>
+						<h3>{note.data.title}</h3>
+						<p class="note-excerpt">{excerpt(note.body ?? '')}</p>
+					</a>
+				</li>
+			))
+		}
+	</ol>
+</Page>
+
+<style>
+	.page-title {
+		margin: 0.6em 0 0.2em;
+	}
+	.page-desc {
+		margin: 0 0 1.4em;
+		color: rgb(var(--gray));
+	}
+	.note-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.9em;
+	}
+	.note-list a {
+		display: block;
+		padding: 1.1em 1.2em;
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		border-radius: 16px;
+		background: var(--bg-surface);
+		text-decoration: none;
+		transition:
+			box-shadow 0.2s ease,
+			transform 0.2s ease;
+	}
+	.note-list a:hover {
+		box-shadow: 0 8px 28px rgba(var(--gray), 0.22);
+		transform: translateY(-2px);
+	}
+	.note-meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.6em;
+		margin: 0 0 0.3em;
+		font-size: 0.82em;
+		color: rgb(var(--gray));
+	}
+	.tag {
+		padding: 0.1em 0.6em;
+		border-radius: 999px;
+		background: rgba(var(--gray-light), 0.7);
+	}
+	.note-list h3 {
+		margin: 0 0 0.25em;
+		font-size: 1.15em;
+		color: rgb(var(--black));
+	}
+	.note-list a:hover h3 {
+		color: var(--accent-text, var(--accent));
+	}
+	.note-excerpt {
+		margin: 0;
+		font-size: 0.9em;
+		color: rgb(var(--gray-dark));
+	}
+</style>

@@ -17,4 +17,23 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+// 手记:生活向短文,带心情/天气小签
+const notes = defineCollection({
+	loader: glob({ base: './src/content/notes', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		title: z.string(),
+		pubDate: z.coerce.date(),
+		mood: z.string().optional(),
+		weather: z.string().optional(),
+	}),
+});
+
+// 思考:一句话说说流,正文即内容
+const says = defineCollection({
+	loader: glob({ base: './src/content/says', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		pubDate: z.coerce.date(),
+	}),
+});
+
+export const collections = { blog, notes, says };

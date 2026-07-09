@@ -1,0 +1,155 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../layouts/Page.astro';
+
+const milestones = [
+	{ date: '2025.10', text: '在一部旧手机上,用现成框架凑出第一个 QQ 查号机器人' },
+	{ date: '2026.01', text: '迁上云服务器,NoneBot2 插件化重写,机器人正式"转正"' },
+	{ date: '2026.04', text: 'yjwj.pro Web 端上线:签到积分、商城、社区论坛' },
+	{ date: '2026.06', text: 'naraka.yjwj.pro 战绩查询独立站上线' },
+	{ date: '2026.07', text: '这个博客开张,开始把路上的坑写下来' },
+];
+
+const posts = await getCollection('blog');
+const notes = await getCollection('notes');
+const entries = [
+	...posts.map((p) => ({
+		date: p.data.pubDate,
+		title: p.data.title,
+		href: `/blog/${p.id}/`,
+		kind: '文',
+	})),
+	...notes.map((n) => ({
+		date: n.data.pubDate,
+		title: n.data.title,
+		href: `/notes/${n.id}/`,
+		kind: '记',
+	})),
+].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+const byYear = new Map<number, typeof entries>();
+for (const e of entries) {
+	const y = e.date.getFullYear();
+	if (!byYear.has(y)) byYear.set(y, []);
+	byYear.get(y)!.push(e);
+}
+const fmt = (d: Date) =>
+	`${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+---
+
+<Page title="时光 · WuhuKaitou 的博客" description="建站里程碑与内容归档时间线">
+	<h1 class="page-title">时光</h1>
+	<p class="page-desc">从一部旧手机到一串站点,按时间排好。</p>
+
+	<h2 class="tl-head">里程碑</h2>
+	<ol class="tl">
+		{
+			milestones
+				.slice()
+				.reverse()
+				.map((m) => (
+					<li class="tl-item">
+						<span class="tl-date">{m.date}</span>
+						<span class="tl-text">{m.text}</span>
+					</li>
+				))
+		}
+	</ol>
+
+	<h2 class="tl-head">归档</h2>
+	{
+		[...byYear.entries()].map(([year, list]) => (
+			<section class="year">
+				<h3 class="year-label">{year}</h3>
+				<ol class="tl">
+					{list.map((e) => (
+						<li class="tl-item">
+							<span class="tl-date">{fmt(e.date)}</span>
+							<span class="kind">{e.kind}</span>
+							<a class="tl-link" href={e.href}>
+								{e.title}
+							</a>
+						</li>
+					))}
+				</ol>
+			</section>
+		))
+	}
+</Page>
+
+<style>
+	.page-title {
+		margin: 0.6em 0 0.2em;
+	}
+	.page-desc {
+		margin: 0 0 1.4em;
+		color: rgb(var(--gray));
+	}
+	.tl-head {
+		display: flex;
+		align-items: center;
+		gap: 0.45em;
+		font-size: 1.35em;
+		margin: 1.2em 0 0.6em;
+	}
+	.tl-head::before {
+		content: '';
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.tl {
+		list-style: none;
+		margin: 0;
+		padding: 0 0 0 1em;
+		border-left: 2px solid rgba(var(--gray-light), 0.9);
+	}
+	.tl-item {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.6em;
+		padding: 0.4em 0 0.4em 0.9em;
+	}
+	.tl-item::before {
+		content: '';
+		position: absolute;
+		left: -0.35em;
+		top: 0.95em;
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.tl-date {
+		font-family: Consolas, 'Courier New', monospace;
+		font-size: 0.82em;
+		color: rgb(var(--gray));
+		font-variant-numeric: tabular-nums;
+	}
+	.tl-text {
+		font-size: 0.95em;
+	}
+	.kind {
+		font-size: 0.72em;
+		padding: 0.05em 0.5em;
+		border-radius: 999px;
+		background: rgba(var(--gray-light), 0.7);
+		color: rgb(var(--gray-dark));
+	}
+	.tl-link {
+		font-size: 0.95em;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.tl-link:hover {
+		text-decoration: underline;
+	}
+	.year-label {
+		margin: 0.8em 0 0.3em;
+		font-size: 1.05em;
+		color: rgb(var(--gray));
+	}
+</style>

@@ -1,0 +1,131 @@
+---
+import Page from '../layouts/Page.astro';
+
+const friends = [
+	{
+		name: '永劫无间数据平台',
+		url: 'https://yjwj.pro',
+		desc: '我自己的主站:查号、签到、商城、社区',
+		initial: '永',
+	},
+	{
+		name: '摸金战绩查询',
+		url: 'https://naraka.yjwj.pro',
+		desc: '无间镖客战绩,照小程序 UI 复刻',
+		initial: '摸',
+	},
+	{
+		name: '服务状态页',
+		url: 'https://status.yjwj.pro',
+		desc: '全家桶的心跳,绿灯常亮是我的 KPI',
+		initial: '状',
+	},
+];
+---
+
+<Page title="友链 · WuhuKaitou 的博客" description="朋友们与自家生态">
+	<h1 class="page-title">友链</h1>
+	<p class="page-desc">目前住着自家生态,虚位以待真正的朋友们。</p>
+	<div class="grid">
+		{
+			friends.map((f) => (
+				<a class="friend" href={f.url} target="_blank" rel="noopener">
+					<span class="badge" aria-hidden="true">
+						{f.initial}
+					</span>
+					<span class="info">
+						<b>{f.name}</b>
+						<small>{f.desc}</small>
+					</span>
+				</a>
+			))
+		}
+		<div class="friend empty">
+			<span class="badge" aria-hidden="true">+</span>
+			<span class="info">
+				<b>虚位以待</b>
+				<small>想交换友链?去<a href="/guestbook">留言板</a>丢下你的站点即可</small>
+			</span>
+		</div>
+	</div>
+	<section class="rules">
+		<h2>交换约定</h2>
+		<ul>
+			<li>站点可正常访问,内容原创为主;</li>
+			<li>格式:名称 + 链接 + 一句话介绍(可带头像图链);</li>
+			<li>本站信息:<code>WuhuKaitou 的博客 · https://yjwjsjz.github.io</code></li>
+		</ul>
+	</section>
+</Page>
+
+<style>
+	.page-title {
+		margin: 0.6em 0 0.2em;
+	}
+	.page-desc {
+		margin: 0 0 1.4em;
+		color: rgb(var(--gray));
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 0.9em;
+	}
+	.friend {
+		display: flex;
+		align-items: center;
+		gap: 0.9em;
+		padding: 1em 1.1em;
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		border-radius: 16px;
+		background: var(--bg-surface);
+		text-decoration: none;
+		color: inherit;
+		transition:
+			box-shadow 0.2s ease,
+			transform 0.2s ease;
+	}
+	a.friend:hover {
+		box-shadow: 0 8px 28px rgba(var(--gray), 0.22);
+		transform: translateY(-2px);
+	}
+	.badge {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 46px;
+		height: 46px;
+		border-radius: 50%;
+		background: rgba(var(--gray-light), 0.7);
+		color: var(--accent-text, var(--accent));
+		font-weight: 700;
+		font-size: 1.15em;
+	}
+	.info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15em;
+		min-width: 0;
+	}
+	.info b {
+		color: rgb(var(--black));
+	}
+	.info small {
+		font-size: 0.82em;
+		color: rgb(var(--gray-dark));
+	}
+	.friend.empty {
+		border-style: dashed;
+	}
+	.rules {
+		margin-top: 2em;
+	}
+	.rules h2 {
+		font-size: 1.2em;
+	}
+	.rules ul {
+		padding-left: 1.2em;
+		font-size: 0.92em;
+		color: rgb(var(--gray-dark));
+	}
+</style>

@@ -1,0 +1,60 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import Comments from '../../components/Comments.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Page from '../../layouts/Page.astro';
+
+export async function getStaticPaths() {
+	const notes = await getCollection('notes');
+	return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+type Props = { note: CollectionEntry<'notes'> };
+const { note } = Astro.props;
+const { Content } = await render(note);
+---
+
+<Page title={`${note.data.title} · 手记`} description={note.data.title}>
+	<article>
+		<p class="note-meta">
+			<FormattedDate date={note.data.pubDate} />
+			{note.data.mood && <span class="tag">心情 · {note.data.mood}</span>}
+			{note.data.weather && <span class="tag">天气 · {note.data.weather}</span>}
+		</p>
+		<h1 class="note-title">{note.data.title}</h1>
+		<hr />
+		<Content />
+		<p class="back"><a href="/notes">← 回手记列表</a></p>
+		<Comments />
+	</article>
+</Page>
+
+<style>
+	.note-meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.6em;
+		margin: 1.2em 0 0.3em;
+		font-size: 0.85em;
+		color: rgb(var(--gray));
+	}
+	.tag {
+		padding: 0.1em 0.6em;
+		border-radius: 999px;
+		background: rgba(var(--gray-light), 0.7);
+	}
+	.note-title {
+		margin: 0 0 0.4em;
+	}
+	.back {
+		margin-top: 2em;
+	}
+	.back a {
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.back a:hover {
+		text-decoration: underline;
+	}
+</style>

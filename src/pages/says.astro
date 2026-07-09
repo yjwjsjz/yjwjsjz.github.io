@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+import Page from '../layouts/Page.astro';
+
+const says = (await getCollection('says')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<Page title="思考 · WuhuKaitou 的博客" description="一句话的碎碎念与开发感悟">
+	<h1 class="page-title">思考</h1>
+	<p class="page-desc">一些不成文章的念头,想到就记。</p>
+	<ol class="say-list">
+		{
+			says.map((say) => (
+				<li class="say">
+					<p class="say-text">{(say.body ?? '').trim()}</p>
+					<p class="say-date">
+						<FormattedDate date={say.data.pubDate} />
+					</p>
+				</li>
+			))
+		}
+	</ol>
+</Page>
+
+<style>
+	.page-title {
+		margin: 0.6em 0 0.2em;
+	}
+	.page-desc {
+		margin: 0 0 1.4em;
+		color: rgb(var(--gray));
+	}
+	.say-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.8em;
+	}
+	.say {
+		position: relative;
+		padding: 1em 1.2em 0.8em;
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		border-left: 3px solid var(--accent);
+		border-radius: 0 14px 14px 0;
+		background: var(--bg-surface);
+	}
+	.say-text {
+		margin: 0 0 0.4em;
+		color: rgb(var(--black));
+	}
+	.say-date {
+		margin: 0;
+		font-size: 0.78em;
+		color: rgb(var(--gray));
+	}
+</style>
