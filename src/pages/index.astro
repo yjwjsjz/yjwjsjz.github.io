@@ -7,9 +7,19 @@ import Header from '../components/Header.astro';
 import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { readingMinutes } from '../utils/reading-time';
 
-const posts = (await getCollection('blog'))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 3);
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const posts = allPosts.slice(0, 3);
+
+// 站点统计(构建时算,每次部署更新)
+const totalCjk = allPosts.reduce(
+	(n, p) => n + (((p.body ?? '').match(/[一-鿿]/g) ?? []).length),
+	0
+);
+const wanzi = (totalCjk / 10000).toFixed(1);
+const firstPub = Math.min(...allPosts.map((p) => p.data.pubDate.valueOf()));
+const days = Math.max(1, Math.ceil((Date.now() - firstPub) / 86400000));
 
 const projects = [
 	{
@@ -47,6 +57,33 @@ const stacks = [
 	{ label: '前端', color: '#34d399', items: ['TypeScript', 'Next.js', 'Astro', 'Tailwind CSS'] },
 	{ label: '运维', color: '#ff7b54', items: ['Linux', 'Caddy', 'Docker', 'GitHub Actions'] },
 ];
+
+const socials = [
+	{
+		label: 'GitHub',
+		href: GITHUB_URL,
+		external: true,
+		icon: '<svg viewBox="0 0 16 16" aria-hidden="true" width="18" height="18"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>',
+	},
+	{
+		label: 'RSS 订阅',
+		href: '/rss.xml',
+		external: false,
+		icon: '<svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>',
+	},
+	{
+		label: '永劫无间数据平台',
+		href: 'https://yjwj.pro',
+		external: true,
+		icon: '<svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>',
+	},
+	{
+		label: '摸金战绩查询',
+		href: 'https://naraka.yjwj.pro',
+		external: true,
+		icon: '<svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
+	},
+];
 ---
 
 <!doctype html>
@@ -58,29 +95,40 @@ const stacks = [
 		<Header />
 		<main>
 			<section class="hero">
-				<div class="hero-text">
-					<p class="hello">你好,我是</p>
-					<h1 class="name">WuhuKaitou <span class="wave" aria-hidden="true">👋</span></h1>
-					<p class="tagline">
-						独立开发者。从 Java 起步,现在主要写 Python 和 TypeScript。
-						喜欢围绕游戏数据做产品:机器人、网站、后台,一个人从零到上线全包。
-					</p>
-					<p class="now"><span class="dot" aria-hidden="true"></span>正在折腾:永劫无间数据平台</p>
-					<div class="hero-actions">
-						<a class="btn primary" href="/blog">读文章</a>
-						<a class="btn ghost" href="/about">关于我</a>
-						<a class="btn ghost" href={GITHUB_URL} target="_blank" rel="noopener">GitHub</a>
-					</div>
-				</div>
 				<img
 					class="avatar"
 					src="https://github.com/yjwjsjz.png?size=240"
 					alt="WuhuKaitou 的头像"
-					width="120"
-					height="120"
+					width="112"
+					height="112"
 					loading="eager"
 					referrerpolicy="no-referrer"
 				/>
+				<h1 class="greet">你好,我是 <span class="me">WuhuKaitou</span> <span class="wave" aria-hidden="true">👋</span></h1>
+				<p class="line2">
+					我把<em>游戏数据</em>铸成产品
+					<span class="chip">✦ Bot & Web</span>
+				</p>
+				<p class="sub">A solo full-stack developer · bots, sites and data products.</p>
+				<div class="hero-tail">
+					<p class="motto">「先跑起来,再做漂亮。」</p>
+					<p class="stats">{allPosts.length} 篇 · {wanzi} 万字 · {days} 天</p>
+					<div class="socials">
+						{
+							socials.map((s) => (
+								<a
+									class="social-btn"
+									href={s.href}
+									target={s.external ? '_blank' : undefined}
+									rel={s.external ? 'noopener' : undefined}
+								>
+									<span class="sr-only">{s.label}</span>
+									<Fragment set:html={s.icon} />
+								</a>
+							))
+						}
+					</div>
+				</div>
 			</section>
 
 			<section class="block">
@@ -166,103 +214,111 @@ const stacks = [
 </html>
 
 <style>
-	/* ---- Hero(Shiro 风:干净留白 + 头像) ---- */
+	/* ---- Hero(innei 式:全屏居中) ---- */
 	.hero {
+		min-height: calc(100svh - 6.5rem);
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		justify-content: space-between;
-		gap: 2em;
-		padding: 3em 0 2.5em;
-	}
-	.hero-text {
-		min-width: 0;
+		justify-content: center;
+		text-align: center;
+		padding: 1em 0 2em;
 	}
 	.avatar {
-		flex: none;
 		border-radius: 50%;
-		border: 3px solid rgba(var(--gray-light), 0.9);
-		box-shadow: 0 4px 18px rgba(var(--gray), 0.25);
+		border: 1px solid rgba(var(--gray-light), 0.9);
+		box-shadow: 0 0 44px rgba(var(--gray), 0.35);
+		margin-bottom: 1.1em;
 	}
-	@media (max-width: 560px) {
-		.hero {
-			flex-direction: column-reverse;
-			align-items: flex-start;
-			gap: 1.2em;
-			padding-top: 2em;
-		}
-		.avatar {
-			width: 84px;
-			height: 84px;
-		}
-	}
-	.hello {
-		margin: 0 0 0.2em;
-		font-size: 1.1em;
-		color: rgb(var(--gray));
-	}
-	.name {
-		margin: 0 0 0.3em;
-		font-size: clamp(2.4em, 6.5vw, 3.6em);
+	.greet {
+		margin: 0 0 0.15em;
+		font-size: clamp(1.9em, 5.5vw, 2.8em);
 		color: rgb(var(--black));
-		width: fit-content;
+		font-weight: 700;
+	}
+	.me {
+		color: var(--accent-text, var(--accent));
 	}
 	.wave {
 		display: inline-block;
 		transform-origin: 70% 70%;
 	}
-	.tagline {
-		max-width: 36em;
-		font-size: 1.15em;
-		color: rgb(var(--gray-dark));
-		margin-bottom: 0.8em;
+	.line2 {
+		margin: 0 0 0.6em;
+		font-size: clamp(1.3em, 3.8vw, 1.9em);
+		color: rgb(var(--black));
+		font-weight: 600;
 	}
-	.now {
-		display: flex;
-		align-items: center;
-		gap: 0.5em;
-		margin: 0 0 1.4em;
-		font-size: 0.92em;
+	.line2 em {
+		font-style: italic;
+		font-family: Georgia, '宋体', SimSun, serif;
+		color: var(--accent-text, var(--accent));
+		padding: 0 0.12em;
+	}
+	.chip {
+		display: inline-block;
+		vertical-align: 0.25em;
+		margin-left: 0.3em;
+		padding: 0.22em 0.75em;
+		font-family: Consolas, 'Courier New', monospace;
+		font-size: 0.5em;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		color: var(--accent-text, var(--accent));
+		border: 1px solid var(--accent-text, var(--accent));
+		border-radius: 999px;
+	}
+	.sub {
+		margin: 0;
+		font-size: 0.78em;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
 		color: rgb(var(--gray));
 	}
-	.dot {
-		width: 9px;
-		height: 9px;
-		border-radius: 50%;
-		background: #34d399;
-		box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
-	}
-	.hero-actions {
+	.hero-tail {
+		margin-top: clamp(2.5em, 12vh, 7em);
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.7em;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.6em;
 	}
-	.btn {
-		display: inline-block;
-		padding: 0.55em 1.4em;
-		border-radius: 999px;
-		font-weight: 600;
-		text-decoration: none;
-		transition:
-			transform 0.15s ease,
-			box-shadow 0.15s ease,
-			background-color 0.15s ease,
-			color 0.15s ease;
+	.motto {
+		margin: 0;
+		font-family: Georgia, '宋体', SimSun, serif;
+		font-style: italic;
+		font-size: 0.95em;
+		color: rgb(var(--gray));
 	}
-	.btn.primary {
-		background: var(--accent-text, var(--accent));
-		color: var(--bg);
+	.stats {
+		margin: 0;
+		font-size: 0.82em;
+		color: rgb(var(--gray));
+		font-variant-numeric: tabular-nums;
 	}
-	.btn.primary:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 6px 16px rgba(var(--gray), 0.35);
+	.socials {
+		display: flex;
+		gap: 0.65em;
+		margin-top: 0.4em;
 	}
-	.btn.ghost {
+	.social-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		border: 1px solid rgba(var(--gray-light), 0.9);
 		color: rgb(var(--gray-dark));
-		background: rgba(var(--gray-light), 0.55);
+		background: var(--bg-surface);
+		transition:
+			color 0.15s ease,
+			border-color 0.15s ease,
+			transform 0.15s ease;
 	}
-	.btn.ghost:hover {
-		background: rgba(var(--gray-light), 0.9);
-		transform: translateY(-1px);
+	.social-btn:hover {
+		color: var(--accent-text, var(--accent));
+		border-color: rgb(var(--gray));
+		transform: translateY(-2px);
 	}
 
 	/* ---- 区块通用 ---- */
@@ -467,27 +523,33 @@ const stacks = [
 
 	/* ---- 入场动效(尊重减动效偏好) ---- */
 	@media (prefers-reduced-motion: no-preference) {
-		.hero-text > *,
-		.avatar {
+		.hero > * {
 			animation: rise 0.55s ease both;
 		}
-		.hero-text > :nth-child(2) {
+		.hero > :nth-child(2) {
 			animation-delay: 0.06s;
 		}
-		.hero-text > :nth-child(3) {
+		.hero > :nth-child(3) {
 			animation-delay: 0.12s;
 		}
-		.hero-text > :nth-child(4) {
+		.hero > :nth-child(4) {
 			animation-delay: 0.18s;
 		}
-		.hero-text > :nth-child(5) {
+		.hero > :nth-child(5) {
 			animation-delay: 0.24s;
 		}
-		.dot {
-			animation: pulse 2.2s ease-out infinite;
-		}
-		.name:hover .wave {
+		.greet:hover .wave {
 			animation: wave 0.9s ease-in-out;
+		}
+	}
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
 		}
 	}
 	@keyframes wave {
@@ -503,27 +565,6 @@ const stacks = [
 		}
 		75% {
 			transform: rotate(12deg);
-		}
-	}
-	@keyframes rise {
-		from {
-			opacity: 0;
-			transform: translateY(12px);
-		}
-		to {
-			opacity: 1;
-			transform: none;
-		}
-	}
-	@keyframes pulse {
-		0% {
-			box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
-		}
-		70% {
-			box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
-		}
-		100% {
-			box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
 		}
 	}
 </style>
