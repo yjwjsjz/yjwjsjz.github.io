@@ -2,13 +2,31 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import Comments from '../components/Comments.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type PostLink = { slug: string; title: string };
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+type Props = CollectionEntry<'blog'>['data'] & {
+	minutes?: number;
+	prevPost?: PostLink | null;
+	nextPost?: PostLink | null;
+	showComments?: boolean;
+};
+
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	minutes,
+	prevPost,
+	nextPost,
+	showComments = false,
+} = Astro.props;
 ---
 
 <html lang="zh-CN">
@@ -52,6 +70,46 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+			.post-nav {
+				display: flex;
+				justify-content: space-between;
+				gap: 1em;
+				margin-top: 3em;
+				padding-top: 2em;
+				border-top: 1px solid rgb(var(--gray-light));
+			}
+			.post-nav-link {
+				display: flex;
+				flex-direction: column;
+				gap: 0.3em;
+				max-width: 48%;
+				text-decoration: none;
+			}
+			.post-nav-link.next {
+				margin-left: auto;
+				text-align: right;
+			}
+			.post-nav-link span {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+			}
+			.post-nav-link strong {
+				color: var(--accent);
+			}
+			.post-nav-link:hover strong {
+				text-decoration: underline;
+			}
+			@media (max-width: 720px) {
+				.post-nav {
+					flex-direction: column;
+				}
+				.post-nav-link,
+				.post-nav-link.next {
+					max-width: 100%;
+					margin-left: 0;
+					text-align: left;
+				}
+			}
 		</style>
 	</head>
 
@@ -66,10 +124,11 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 					<div class="title">
 						<div class="date">
 							<FormattedDate date={pubDate} />
+							{minutes && <span> · 约 {minutes} 分钟读完</span>}
 							{
 								updatedDate && (
 									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
+										最后更新于 <FormattedDate date={updatedDate} />
 									</div>
 								)
 							}
@@ -78,9 +137,58 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 						<hr />
 					</div>
 					<slot />
+					{
+						(prevPost || nextPost) && (
+							<nav class="post-nav" aria-label="文章导航">
+								{prevPost && (
+									<a class="post-nav-link prev" href={`/blog/${prevPost.slug}/`}>
+										<span>← 上一篇</span>
+										<strong>{prevPost.title}</strong>
+									</a>
+								)}
+								{nextPost && (
+									<a class="post-nav-link next" href={`/blog/${nextPost.slug}/`}>
+										<span>下一篇 →</span>
+										<strong>{nextPost.title}</strong>
+									</a>
+								)}
+							</nav>
+						)
+					}
+					{showComments && <Comments />}
 				</div>
 			</article>
 		</main>
 		<Footer />
+		<script>
+			// 给每个代码块挂复制按钮;幂等,支持 View Transitions 后重挂
+			function initCopyButtons() {
+				document.querySelectorAll<HTMLPreElement>('pre.astro-code').forEach((pre) => {
+					if (pre.parentElement?.classList.contains('code-wrap')) return;
+					const wrap = document.createElement('div');
+					wrap.className = 'code-wrap';
+					pre.replaceWith(wrap);
+					wrap.appendChild(pre);
+					const btn = document.createElement('button');
+					btn.className = 'code-copy';
+					btn.type = 'button';
+					btn.textContent = '复制';
+					btn.addEventListener('click', async () => {
+						try {
+							await navigator.clipboard.writeText(pre.innerText);
+							btn.textContent = '已复制';
+						} catch {
+							btn.textContent = '复制失败';
+						}
+						setTimeout(() => {
+							btn.textContent = '复制';
+						}, 1500);
+					});
+					wrap.appendChild(btn);
+				});
+			}
+			initCopyButtons();
+			document.addEventListener('astro:page-load', initCopyButtons);
+		</script>
 	</body>
 </html>

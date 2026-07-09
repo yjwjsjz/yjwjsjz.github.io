@@ -2,7 +2,7 @@
 title: '用 Astro + GitHub Pages 免费搭一个博客(附踩坑)'
 description: '这个博客本身的搭建记录:Astro 官方模板 + GitHub Actions 自动部署,全程免费,含 Node 版本坑'
 pubDate: 'Jul 09 2026'
-heroImage: '../../assets/blog-placeholder-3.jpg'
+heroImage: '../../assets/covers/hello-astro.svg'
 ---
 
 这个博客上线了。作为开篇,就把它自己的搭建过程记下来——全程免费,不需要服务器,一次配置之后发文章只剩 `git push`。

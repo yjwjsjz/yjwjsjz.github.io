@@ -6,6 +6,7 @@ import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
 import { Font } from 'astro:assets';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
 	title: string;
@@ -22,20 +23,26 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <script is:inline>
-	// 在首屏绘制前应用已保存的主题,避免明暗闪烁
+	// 在首屏绘制前应用已保存的主题,避免明暗闪烁;
+	// View Transitions 换页会重置 <html> 属性,after-swap 时重放一次
 	(() => {
-		try {
-			const theme = localStorage.getItem('theme');
-			if (theme === 'light' || theme === 'dark') {
-				document.documentElement.dataset.theme = theme;
+		const applyTheme = () => {
+			try {
+				const theme = localStorage.getItem('theme');
+				if (theme === 'light' || theme === 'dark') {
+					document.documentElement.dataset.theme = theme;
+				}
+			} catch {
+				/* localStorage 不可用时跟随系统即可 */
 			}
-		} catch {
-			/* localStorage 不可用时跟随系统即可 */
-		}
+		};
+		applyTheme();
+		document.addEventListener('astro:after-swap', applyTheme);
 	})();
 </script>
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
 	rel="alternate"
@@ -46,6 +53,8 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta name="generator" content={Astro.generator} />
 
 <Font cssVariable="--font-atkinson" preload />
+
+<ClientRouter />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />

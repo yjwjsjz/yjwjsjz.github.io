@@ -2,7 +2,7 @@
 title: '从一个手机上的 QQ 机器人,到一个人运营的完整平台'
 description: '记录永劫无间数据平台的成长史:查号脚本 → 云服务器机器人 → Web 双端平台,一个人全栈的两年'
 pubDate: 'Jul 08 2026'
-heroImage: '../../assets/blog-placeholder-4.jpg'
+heroImage: '../../assets/covers/qq-bot-to-platform.svg'
 ---
 
 这个博客的第一篇正经文章,想先讲讲我最重要的项目是怎么长出来的。

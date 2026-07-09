@@ -70,19 +70,41 @@ import HeaderLink from './HeaderLink.astro';
 	</nav>
 </header>
 <script>
-	const toggle = document.getElementById('theme-toggle');
-	toggle?.addEventListener('click', () => {
-		const root = document.documentElement;
-		const isDark = root.dataset.theme
-			? root.dataset.theme === 'dark'
-			: window.matchMedia('(prefers-color-scheme: dark)').matches;
-		const next = isDark ? 'light' : 'dark';
-		root.dataset.theme = next;
+	function currentTheme(): 'light' | 'dark' {
+		const explicit = document.documentElement.dataset.theme;
+		if (explicit === 'light' || explicit === 'dark') return explicit;
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+	}
+	function syncGiscusTheme(theme: string) {
+		const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+		frame?.contentWindow?.postMessage(
+			{ giscus: { setConfig: { theme } } },
+			'https://giscus.app'
+		);
+	}
+	// 事件委托:View Transitions 换页后按钮是新 DOM,直接绑按钮会失联
+	document.addEventListener('click', (event) => {
+		const target = event.target;
+		if (!(target instanceof Element) || !target.closest('#theme-toggle')) return;
+		const next = currentTheme() === 'dark' ? 'light' : 'dark';
+		document.documentElement.dataset.theme = next;
 		try {
 			localStorage.setItem('theme', next);
 		} catch {
 			/* 无痕模式下仅本页生效 */
 		}
+		syncGiscusTheme(next);
+	});
+	// giscus 加载期间用户可能已切主题(此时 postMessage 会落空),
+	// 收到它的首条消息(就绪信号)后按当前主题补对齐一次
+	let giscusSynced = false;
+	window.addEventListener('message', (event) => {
+		if (event.origin !== 'https://giscus.app' || giscusSynced) return;
+		giscusSynced = true;
+		syncGiscusTheme(currentTheme());
+	});
+	document.addEventListener('astro:after-swap', () => {
+		giscusSynced = false;
 	});
 </script>
 <style>

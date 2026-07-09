@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" font-family="'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+	<defs>
+		<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+			<path d="M40 0H0V40" fill="none" stroke="#2a3050" stroke-width="1" opacity="0.35" />
+		</pattern>
+		<radialGradient id="glow" cx="0.82" cy="0.2" r="0.7">
+			<stop offset="0" stop-color="#7c8cff" stop-opacity="0.35" />
+			<stop offset="1" stop-color="#7c8cff" stop-opacity="0" />
+		</radialGradient>
+	</defs>
+	<rect width="1200" height="600" fill="#151827" />
+	<rect width="1200" height="600" fill="url(#grid)" />
+	<rect width="1200" height="600" fill="url(#glow)" />
+	<circle cx="985" cy="120" r="7" fill="#7c8cff" />
+	<circle cx="1040" cy="180" r="4" fill="#7c8cff" opacity="0.6" />
+	<circle cx="930" cy="210" r="5" fill="#7c8cff" opacity="0.4" />
+	<path d="M930 210 L985 120 L1040 180" fill="none" stroke="#7c8cff" stroke-width="1.5" opacity="0.45" />
+	<rect x="96" y="196" width="72" height="10" rx="5" fill="#7c8cff" />
+	<text x="96" y="300" font-size="76" font-weight="700" fill="#f2f4fb">从机器人到平台</text>
+	<text x="96" y="366" font-size="30" fill="#9aa4c4">一个人全栈的成长史 · QQ Bot → Web 双端</text>
+	<text x="96" y="470" font-size="24" fill="#5f6a8f" font-family="Consolas, 'Courier New', monospace">$ systemctl start qqbot &amp;&amp; next build</text>
+	<text x="96" y="540" font-size="22" fill="#495172" font-family="Consolas, 'Courier New', monospace">WuhuKaitou · blog</text>
+</svg>
