@@ -20,6 +20,7 @@ const projects = [
 		// 亮/暗两套主题色:亮色面(白底)用深色保对比度,暗色面用亮色
 		colorLight: '#2337ff',
 		colorDark: '#7c8cff',
+		icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>',
 	},
 	{
 		name: '摸金战绩查询',
@@ -28,6 +29,7 @@ const projects = [
 		hint: 'naraka.yjwj.pro',
 		colorLight: '#047857',
 		colorDark: '#34d399',
+		icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
 	},
 	{
 		name: '更多折腾',
@@ -36,15 +38,14 @@ const projects = [
 		hint: 'GitHub',
 		colorLight: '#c2410c',
 		colorDark: '#ff7b54',
+		icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>',
 	},
 ];
 
 const stacks = [
-	'Python / FastAPI / NoneBot2',
-	'TypeScript / Next.js / Astro',
-	'Java',
-	'SQLite / SQLAlchemy',
-	'Linux / Caddy / Docker',
+	{ label: '后端', color: '#7c8cff', items: ['Python', 'FastAPI', 'NoneBot2', 'SQLite / SQLAlchemy', 'Java'] },
+	{ label: '前端', color: '#34d399', items: ['TypeScript', 'Next.js', 'Astro', 'Tailwind CSS'] },
+	{ label: '运维', color: '#ff7b54', items: ['Linux', 'Caddy', 'Docker', 'GitHub Actions'] },
 ];
 ---
 
@@ -109,6 +110,9 @@ const stacks = [
 								rel="noopener"
 								style={`--card-accent-light: ${p.colorLight}; --card-accent-dark: ${p.colorDark}`}
 							>
+								<span class="card-icon" aria-hidden="true">
+									<Fragment set:html={p.icon} />
+								</span>
 								<h3>{p.name}</h3>
 								<p>{p.desc}</p>
 								<span class="link-hint">
@@ -124,9 +128,27 @@ const stacks = [
 				<div class="section-head">
 					<h2>技术栈</h2>
 				</div>
-				<ul class="stack">
-					{stacks.map((s) => <li>{s}</li>)}
-				</ul>
+				<div class="stack-groups">
+					{
+						stacks.map((group) => (
+							<div class="stack-group">
+								<span class="stack-label">{group.label}</span>
+								<ul class="stack">
+									{group.items.map((item) => (
+										<li>
+											<span
+												class="stack-dot"
+												style={`background: ${group.color}`}
+												aria-hidden="true"
+											/>
+											{item}
+										</li>
+									))}
+								</ul>
+							</div>
+						))
+					}
+				</div>
 			</section>
 		</main>
 		<Footer />
@@ -305,8 +327,18 @@ const stacks = [
 	/* ---- 项目卡片 ---- */
 	.projects {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 		gap: 1em;
+	}
+	.card-icon {
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		margin-bottom: 0.7em;
+		border-radius: 10px;
+		background: rgba(var(--gray-light), 0.6);
+		color: var(--card-accent, var(--accent));
 	}
 	.project-card {
 		/* 亮色默认用深色系,暗色主题下切换为亮色系(见下方主题覆盖) */
@@ -372,6 +404,22 @@ const stacks = [
 	}
 
 	/* ---- 技术栈 ---- */
+	.stack-groups {
+		display: flex;
+		flex-direction: column;
+		gap: 0.9em;
+	}
+	.stack-group {
+		display: flex;
+		align-items: baseline;
+		gap: 0.9em;
+	}
+	.stack-label {
+		flex: 0 0 3em;
+		font-size: 0.88em;
+		font-weight: 700;
+		color: rgb(var(--gray));
+	}
 	.stack {
 		list-style: none;
 		padding: 0;
@@ -381,15 +429,37 @@ const stacks = [
 		gap: 0.6em;
 	}
 	.stack li {
-		padding: 0.35em 0.9em;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45em;
+		padding: 0.3em 0.85em;
 		border-radius: 999px;
-		background: rgb(var(--gray-light));
-		font-size: 0.92em;
+		background: rgba(var(--gray-light), 0.75);
+		border: 1px solid rgb(var(--gray-light));
+		font-size: 0.88em;
 		color: rgb(var(--gray-dark));
-		transition: transform 0.15s ease;
+		transition:
+			transform 0.15s ease,
+			border-color 0.15s ease;
 	}
 	.stack li:hover {
 		transform: translateY(-1px);
+		border-color: rgb(var(--gray));
+	}
+	.stack-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		flex: none;
+	}
+	@media (max-width: 560px) {
+		.stack-group {
+			flex-direction: column;
+			gap: 0.4em;
+		}
+		.stack-label {
+			flex: none;
+		}
 	}
 
 	/* ---- 入场动效(尊重减动效偏好) ---- */
