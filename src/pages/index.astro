@@ -2,48 +2,138 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<section class="hero">
+				<h1>你好,我是 WuhuKaitou 👋</h1>
+				<p class="tagline">
+					独立开发者。从 Java 起步,现在主要写 Python 和 TypeScript。
+					喜欢围绕游戏数据做产品:机器人、网站、后台,一个人从零到上线全包。
+				</p>
+			</section>
+
+			<section>
+				<h2>我在做什么</h2>
+				<div class="projects">
+					<a class="project-card" href="https://yjwj.pro" target="_blank" rel="noopener">
+						<h3>永劫无间数据平台</h3>
+						<p>
+							QQ 机器人 + Web 双端的游戏社区平台:Steam 查号、签到积分、商城、
+							社区论坛、管理后台,全套自研自运维。
+						</p>
+						<span class="link-hint">yjwj.pro →</span>
+					</a>
+					<a class="project-card" href="https://naraka.yjwj.pro" target="_blank" rel="noopener">
+						<h3>摸金战绩查询</h3>
+						<p>
+							永劫无间「无间镖客」模式的战绩查询独立站,照小程序 UI 复刻,
+							段位徽章、趋势图、近期对局一应俱全。
+						</p>
+						<span class="link-hint">naraka.yjwj.pro →</span>
+					</a>
+					<a class="project-card" href={GITHUB_URL} target="_blank" rel="noopener">
+						<h3>更多折腾</h3>
+						<p>
+							发卡机器人、聚合工具站、监控告警、CI 流水线……
+							大部分轮子都在 GitHub 上慢慢攒。
+						</p>
+						<span class="link-hint">GitHub →</span>
+					</a>
+				</div>
+			</section>
+
+			<section>
+				<h2>技术栈</h2>
+				<ul class="stack">
+					<li>Python / FastAPI / NoneBot2</li>
+					<li>TypeScript / Next.js / Astro</li>
+					<li>Java</li>
+					<li>SQLite / SQLAlchemy</li>
+					<li>Linux / Caddy / Docker</li>
+				</ul>
+			</section>
+
+			<section class="cta">
+				<p>
+					这里会记录我开发路上的踩坑与心得——欢迎去 <a href="/blog">文章</a> 页逛逛,
+					或到 <a href="/about">关于</a> 页进一步了解我。
+				</p>
+			</section>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	.hero {
+		padding: 1em 0 0.5em;
+	}
+	.hero h1 {
+		margin-bottom: 0.4em;
+	}
+	.tagline {
+		font-size: 1.15em;
+		color: rgb(var(--gray-dark));
+	}
+	.projects {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 1em;
+	}
+	.project-card {
+		display: block;
+		padding: 1.25em;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 12px;
+		text-decoration: none;
+		color: inherit;
+		background: white;
+		box-shadow: 0 2px 6px rgba(var(--black), 5%);
+		transition: box-shadow 0.2s ease, transform 0.2s ease;
+	}
+	.project-card:hover {
+		box-shadow: var(--box-shadow);
+		transform: translateY(-2px);
+	}
+	.project-card h3 {
+		margin: 0 0 0.4em;
+		font-size: 1.15em;
+		color: rgb(var(--black));
+	}
+	.project-card p {
+		margin: 0 0 0.6em;
+		font-size: 0.92em;
+		color: rgb(var(--gray-dark));
+	}
+	.link-hint {
+		font-size: 0.9em;
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.stack {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6em;
+	}
+	.stack li {
+		padding: 0.35em 0.9em;
+		border-radius: 999px;
+		background: rgb(var(--gray-light));
+		font-size: 0.92em;
+		color: rgb(var(--gray-dark));
+	}
+	.cta {
+		margin-top: 1em;
+	}
+</style>
