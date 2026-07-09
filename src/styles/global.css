@@ -4,33 +4,37 @@
   License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
 
+/* Shiro 风(innei.in)令牌:苹果系底色 + 随机日本传统色 accent(BaseHead 脚本注入 --accent-pick-*) */
 :root {
 	color-scheme: light;
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--bg: #fff;
-	--bg-surface: #fff;
-	--accent-grad: linear-gradient(120deg, #2337ff 0%, #7c8cff 100%);
-	--gray-gradient: rgba(var(--gray-light), 50%), var(--bg);
+	--accent: var(--accent-pick-light, #33a6b8);
+	--accent-text: var(--accent-pick-light-text, #227b8a);
+	--accent-dark: var(--accent-pick-light-text, #227b8a);
+	--black: 23, 23, 23;
+	--gray: 115, 115, 115;
+	--gray-light: 229, 229, 229;
+	--gray-dark: 64, 64, 64;
+	--bg: #ffffff;
+	--bg-surface: #ffffff;
+	--bg-blur: rgba(255, 255, 255, 0.72);
+	--accent-grad: linear-gradient(120deg, var(--accent), var(--accent));
+	--gray-gradient: var(--bg), var(--bg);
 	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
-		0 16px 32px rgba(var(--gray), 33%);
+		0 2px 6px rgba(var(--gray), 18%), 0 8px 24px rgba(var(--gray), 22%),
+		0 16px 32px rgba(var(--gray), 22%);
 }
 :root[data-theme='dark'] {
 	color-scheme: dark;
-	--accent: #7c8cff;
-	--accent-dark: #b3bdff;
-	--black: 230, 234, 244;
-	--gray: 148, 160, 190;
-	--gray-light: 44, 50, 68;
-	--gray-dark: 208, 214, 228;
-	--bg: #14161d;
-	--bg-surface: #1c1f2a;
-	--accent-grad: linear-gradient(120deg, #7c8cff 0%, #b3bdff 100%);
+	--accent: var(--accent-pick-dark, #f596aa);
+	--accent-text: var(--accent-pick-dark-text, #f596aa);
+	--accent-dark: var(--accent-pick-dark-text, #f596aa);
+	--black: 242, 242, 247;
+	--gray: 142, 142, 147;
+	--gray-light: 58, 58, 60;
+	--gray-dark: 199, 199, 204;
+	--bg: #1c1c1e;
+	--bg-surface: #2c2c2e;
+	--bg-blur: rgba(28, 28, 30, 0.72);
 	--box-shadow:
 		0 2px 6px rgba(0, 0, 0, 35%), 0 8px 24px rgba(0, 0, 0, 33%),
 		0 16px 32px rgba(0, 0, 0, 33%);
@@ -38,19 +42,24 @@
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
 		color-scheme: dark;
-		--accent: #7c8cff;
-		--accent-dark: #b3bdff;
-		--black: 230, 234, 244;
-		--gray: 148, 160, 190;
-		--gray-light: 44, 50, 68;
-		--gray-dark: 208, 214, 228;
-		--bg: #14161d;
-		--bg-surface: #1c1f2a;
-		--accent-grad: linear-gradient(120deg, #7c8cff 0%, #b3bdff 100%);
+		--accent: var(--accent-pick-dark, #f596aa);
+		--accent-text: var(--accent-pick-dark-text, #f596aa);
+		--accent-dark: var(--accent-pick-dark-text, #f596aa);
+		--black: 242, 242, 247;
+		--gray: 142, 142, 147;
+		--gray-light: 58, 58, 60;
+		--gray-dark: 199, 199, 204;
+		--bg: #1c1c1e;
+		--bg-surface: #2c2c2e;
+		--bg-blur: rgba(28, 28, 30, 0.72);
 		--box-shadow:
 			0 2px 6px rgba(0, 0, 0, 35%), 0 8px 24px rgba(0, 0, 0, 33%),
 			0 16px 32px rgba(0, 0, 0, 33%);
 	}
+}
+html {
+	/* sticky header 高度补偿,防锚点跳转标题被遮 */
+	scroll-padding-top: 4.5rem;
 }
 body {
 	/* 中文回退在 astro.config.mjs fonts.fallbacks 里配置(@font-face 家族名带哈希,必须走变量) */
@@ -104,10 +113,10 @@ b {
 	font-weight: 700;
 }
 a {
-	color: var(--accent);
+	color: var(--accent-text, var(--accent));
 }
 a:hover {
-	color: var(--accent);
+	color: var(--accent-text, var(--accent));
 }
 p {
 	margin-bottom: 1em;
@@ -181,7 +190,7 @@ pre > code {
 }
 .code-copy:hover {
 	opacity: 1;
-	color: var(--accent);
+	color: var(--accent-text, var(--accent));
 }
 blockquote {
 	border-left: 4px solid var(--accent);
@@ -213,7 +222,7 @@ hr {
 	color: rgb(var(--black));
 }
 #theme-toggle:hover {
-	color: var(--accent);
+	color: var(--accent-text, var(--accent));
 }
 .theme-icon-dark {
 	display: none;

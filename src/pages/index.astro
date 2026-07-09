@@ -58,19 +58,29 @@ const stacks = [
 		<Header />
 		<main>
 			<section class="hero">
-				<div class="hero-bg" aria-hidden="true"></div>
-				<p class="hello">你好 👋 我是</p>
-				<h1 class="name">WuhuKaitou</h1>
-				<p class="tagline">
-					独立开发者。从 Java 起步,现在主要写 Python 和 TypeScript。
-					喜欢围绕游戏数据做产品:机器人、网站、后台,一个人从零到上线全包。
-				</p>
-				<p class="now"><span class="dot" aria-hidden="true"></span>正在折腾:永劫无间数据平台</p>
-				<div class="hero-actions">
-					<a class="btn primary" href="/blog">读文章</a>
-					<a class="btn ghost" href="/about">关于我</a>
-					<a class="btn ghost" href={GITHUB_URL} target="_blank" rel="noopener">GitHub</a>
+				<div class="hero-text">
+					<p class="hello">你好,我是</p>
+					<h1 class="name">WuhuKaitou <span class="wave" aria-hidden="true">👋</span></h1>
+					<p class="tagline">
+						独立开发者。从 Java 起步,现在主要写 Python 和 TypeScript。
+						喜欢围绕游戏数据做产品:机器人、网站、后台,一个人从零到上线全包。
+					</p>
+					<p class="now"><span class="dot" aria-hidden="true"></span>正在折腾:永劫无间数据平台</p>
+					<div class="hero-actions">
+						<a class="btn primary" href="/blog">读文章</a>
+						<a class="btn ghost" href="/about">关于我</a>
+						<a class="btn ghost" href={GITHUB_URL} target="_blank" rel="noopener">GitHub</a>
+					</div>
 				</div>
+				<img
+					class="avatar"
+					src="https://github.com/yjwjsjz.png?size=240"
+					alt="WuhuKaitou 的头像"
+					width="120"
+					height="120"
+					loading="eager"
+					referrerpolicy="no-referrer"
+				/>
 			</section>
 
 			<section class="block">
@@ -156,28 +166,34 @@ const stacks = [
 </html>
 
 <style>
-	/* ---- Hero ---- */
+	/* ---- Hero(Shiro 风:干净留白 + 头像) ---- */
 	.hero {
-		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 2em;
 		padding: 3em 0 2.5em;
 	}
-	.hero-bg {
-		position: absolute;
-		inset: -2em 0 0;
-		pointer-events: none;
-		background-image:
-			radial-gradient(ellipse 60% 55% at 75% 12%, rgba(var(--gray), 0.18), transparent 70%),
-			linear-gradient(rgba(var(--gray), 0.14) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(var(--gray), 0.14) 1px, transparent 1px);
-		background-size:
-			100% 100%,
-			36px 36px,
-			36px 36px;
-		-webkit-mask-image: radial-gradient(ellipse 90% 85% at 40% 25%, #000 25%, transparent 78%);
-		mask-image: radial-gradient(ellipse 90% 85% at 40% 25%, #000 25%, transparent 78%);
+	.hero-text {
+		min-width: 0;
 	}
-	.hero > :not(.hero-bg) {
-		position: relative;
+	.avatar {
+		flex: none;
+		border-radius: 50%;
+		border: 3px solid rgba(var(--gray-light), 0.9);
+		box-shadow: 0 4px 18px rgba(var(--gray), 0.25);
+	}
+	@media (max-width: 560px) {
+		.hero {
+			flex-direction: column-reverse;
+			align-items: flex-start;
+			gap: 1.2em;
+			padding-top: 2em;
+		}
+		.avatar {
+			width: 84px;
+			height: 84px;
+		}
 	}
 	.hello {
 		margin: 0 0 0.2em;
@@ -186,13 +202,13 @@ const stacks = [
 	}
 	.name {
 		margin: 0 0 0.3em;
-		font-size: clamp(2.6em, 7vw, 4em);
-		background: var(--accent-grad);
-		-webkit-background-clip: text;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
-		color: var(--accent); /* 不支持 background-clip:text 时的兜底 */
+		font-size: clamp(2.4em, 6.5vw, 3.6em);
+		color: rgb(var(--black));
 		width: fit-content;
+	}
+	.wave {
+		display: inline-block;
+		transform-origin: 70% 70%;
 	}
 	.tagline {
 		max-width: 36em;
@@ -222,32 +238,30 @@ const stacks = [
 	}
 	.btn {
 		display: inline-block;
-		padding: 0.55em 1.3em;
-		border-radius: 10px;
+		padding: 0.55em 1.4em;
+		border-radius: 999px;
 		font-weight: 600;
 		text-decoration: none;
 		transition:
 			transform 0.15s ease,
 			box-shadow 0.15s ease,
 			background-color 0.15s ease,
-			border-color 0.15s ease;
+			color 0.15s ease;
 	}
 	.btn.primary {
-		background: var(--accent);
+		background: var(--accent-text, var(--accent));
 		color: var(--bg);
 	}
 	.btn.primary:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 6px 16px rgba(var(--gray), 0.4);
+		box-shadow: 0 6px 16px rgba(var(--gray), 0.35);
 	}
 	.btn.ghost {
-		border: 1px solid rgb(var(--gray-light));
 		color: rgb(var(--gray-dark));
-		background: var(--bg-surface);
+		background: rgba(var(--gray-light), 0.55);
 	}
 	.btn.ghost:hover {
-		border-color: var(--accent);
-		color: var(--accent);
+		background: rgba(var(--gray-light), 0.9);
 		transform: translateY(-1px);
 	}
 
@@ -271,10 +285,10 @@ const stacks = [
 	}
 	.section-head h2::before {
 		content: '';
-		width: 26px;
-		height: 6px;
-		border-radius: 3px;
-		background: var(--accent-grad);
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--accent);
 	}
 	.more {
 		font-size: 0.95em;
@@ -316,7 +330,7 @@ const stacks = [
 		color: rgb(var(--black));
 	}
 	.post-list a:hover h3 {
-		color: var(--accent);
+		color: var(--accent-text, var(--accent));
 	}
 	.post-desc {
 		margin: 0;
@@ -347,30 +361,19 @@ const stacks = [
 		overflow: hidden;
 		display: block;
 		padding: 1.25em;
-		border: 1px solid rgb(var(--gray-light));
-		border-radius: 12px;
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		border-radius: 16px;
 		text-decoration: none;
 		color: inherit;
 		background: var(--bg-surface);
-		box-shadow: 0 2px 6px rgba(var(--black), 5%);
 		transition:
 			box-shadow 0.2s ease,
 			transform 0.2s ease,
-			border-color 0.2s ease;
-	}
-	.project-card::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 3px;
-		background: var(--card-accent, var(--accent));
+			background-color 0.2s ease;
 	}
 	.project-card:hover {
-		box-shadow: var(--box-shadow);
+		box-shadow: 0 8px 28px rgba(var(--gray), 0.22);
 		transform: translateY(-3px);
-		border-color: var(--card-accent, var(--accent));
 	}
 	.project-card h3 {
 		margin: 0.2em 0 0.4em;
@@ -464,23 +467,42 @@ const stacks = [
 
 	/* ---- 入场动效(尊重减动效偏好) ---- */
 	@media (prefers-reduced-motion: no-preference) {
-		.hero > :not(.hero-bg) {
+		.hero-text > *,
+		.avatar {
 			animation: rise 0.55s ease both;
 		}
-		.hero > :nth-child(3) {
+		.hero-text > :nth-child(2) {
 			animation-delay: 0.06s;
 		}
-		.hero > :nth-child(4) {
+		.hero-text > :nth-child(3) {
 			animation-delay: 0.12s;
 		}
-		.hero > :nth-child(5) {
+		.hero-text > :nth-child(4) {
 			animation-delay: 0.18s;
 		}
-		.hero > :nth-child(6) {
+		.hero-text > :nth-child(5) {
 			animation-delay: 0.24s;
 		}
 		.dot {
 			animation: pulse 2.2s ease-out infinite;
+		}
+		.name:hover .wave {
+			animation: wave 0.9s ease-in-out;
+		}
+	}
+	@keyframes wave {
+		0%,
+		100% {
+			transform: rotate(0deg);
+		}
+		25% {
+			transform: rotate(18deg);
+		}
+		50% {
+			transform: rotate(-8deg);
+		}
+		75% {
+			transform: rotate(12deg);
 		}
 	}
 	@keyframes rise {

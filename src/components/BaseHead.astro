@@ -23,21 +23,47 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <script is:inline>
-	// 在首屏绘制前应用已保存的主题,避免明暗闪烁;
-	// View Transitions 换页会重置 <html> 属性,after-swap 时重放一次
+	// 在首屏绘制前应用已保存的主题 + 随机传统色 accent(Shiro 风:每次访问随机一款,会话内保持);
+	// View Transitions 换页会重置 <html> 属性与内联样式,after-swap 时重放一次
 	(() => {
-		const applyTheme = () => {
+		// 亮色系(浅葱/绯/若竹/桃红/薄花)与暗色系(桃/藤/珊瑚/青磁/紺藤)成对
+		const ACCENTS = [
+			{ l: '#33a6b8', lt: '#227b8a', d: '#f596aa', dt: '#f596aa' },
+			{ l: '#ff6666', lt: '#c43a3a', d: '#a0a7d4', dt: '#a9b0dc' },
+			{ l: '#26a69a', lt: '#177f75', d: '#ff7b7b', dt: '#ff8a8a' },
+			{ l: '#fb7287', lt: '#c43a55', d: '#99d8cf', dt: '#99d8cf' },
+			{ l: '#69a6cc', lt: '#3f7ca6', d: '#9ba3d6', dt: '#9ba3d6' },
+		];
+		const apply = () => {
+			const root = document.documentElement;
 			try {
 				const theme = localStorage.getItem('theme');
 				if (theme === 'light' || theme === 'dark') {
-					document.documentElement.dataset.theme = theme;
+					root.dataset.theme = theme;
 				}
 			} catch {
 				/* localStorage 不可用时跟随系统即可 */
 			}
+			let idx;
+			try {
+				// 注意 Number(null)===0 会伪装成合法索引,必须先判空再转数
+				const raw = sessionStorage.getItem('accent-idx');
+				idx = raw === null ? NaN : parseInt(raw, 10);
+				if (!Number.isInteger(idx) || idx < 0 || idx >= ACCENTS.length) {
+					idx = Math.floor(Math.random() * ACCENTS.length);
+					sessionStorage.setItem('accent-idx', String(idx));
+				}
+			} catch {
+				idx = 0;
+			}
+			const a = ACCENTS[idx];
+			root.style.setProperty('--accent-pick-light', a.l);
+			root.style.setProperty('--accent-pick-light-text', a.lt);
+			root.style.setProperty('--accent-pick-dark', a.d);
+			root.style.setProperty('--accent-pick-dark-text', a.dt);
 		};
-		applyTheme();
-		document.addEventListener('astro:after-swap', applyTheme);
+		apply();
+		document.addEventListener('astro:after-swap', apply);
 	})();
 </script>
 <link rel="icon" href="/favicon.ico" sizes="32x32" />
