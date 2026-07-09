@@ -11,7 +11,51 @@ import HeaderLink from './HeaderLink.astro';
 			<HeaderLink href="/blog">文章</HeaderLink>
 			<HeaderLink href="/about">关于</HeaderLink>
 		</div>
-		<div class="social-links">
+		<div class="nav-right">
+			<button id="theme-toggle" aria-label="切换夜间模式" title="切换夜间模式">
+				<svg
+					class="theme-icon-light"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					width="22"
+					height="22"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg
+				>
+				<svg
+					class="theme-icon-dark"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					width="22"
+					height="22"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line
+						x1="12"
+						y1="21"
+						x2="12"
+						y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line
+						x1="18.36"
+						y1="18.36"
+						x2="19.78"
+						y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line
+						x1="21"
+						y1="12"
+						x2="23"
+						y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line
+						x1="18.36"
+						y1="5.64"
+						x2="19.78"
+						y2="4.22"></line></svg
+				>
+			</button>
+			<div class="social-links">
 			<a href={GITHUB_URL} target="_blank" rel="noopener">
 				<span class="sr-only">我的 GitHub</span>
 				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
@@ -21,14 +65,31 @@ import HeaderLink from './HeaderLink.astro';
 					></path></svg
 				>
 			</a>
+			</div>
 		</div>
 	</nav>
 </header>
+<script>
+	const toggle = document.getElementById('theme-toggle');
+	toggle?.addEventListener('click', () => {
+		const root = document.documentElement;
+		const isDark = root.dataset.theme
+			? root.dataset.theme === 'dark'
+			: window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const next = isDark ? 'light' : 'dark';
+		root.dataset.theme = next;
+		try {
+			localStorage.setItem('theme', next);
+		} catch {
+			/* 无痕模式下仅本页生效 */
+		}
+	});
+</script>
 <style>
 	header {
 		margin: 0;
 		padding: 0 1em;
-		background: white;
+		background: var(--bg-surface);
 		box-shadow: 0 2px 8px rgba(var(--black), 5%);
 	}
 	h2 {
@@ -54,6 +115,10 @@ import HeaderLink from './HeaderLink.astro';
 	nav a.active {
 		text-decoration: none;
 		border-bottom-color: var(--accent);
+	}
+	.nav-right {
+		display: flex;
+		align-items: center;
 	}
 	.social-links,
 	.social-links a {
