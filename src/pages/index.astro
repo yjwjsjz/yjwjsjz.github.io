@@ -1,8 +1,51 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { readingMinutes } from '../utils/reading-time';
+
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+
+const projects = [
+	{
+		name: '永劫无间数据平台',
+		desc: 'QQ 机器人 + Web 双端的游戏社区平台:Steam 查号、签到积分、商城、社区论坛、管理后台,全套自研自运维。',
+		href: 'https://yjwj.pro',
+		hint: 'yjwj.pro',
+		// 亮/暗两套主题色:亮色面(白底)用深色保对比度,暗色面用亮色
+		colorLight: '#2337ff',
+		colorDark: '#7c8cff',
+	},
+	{
+		name: '摸金战绩查询',
+		desc: '永劫无间「无间镖客」模式的战绩查询独立站,照小程序 UI 复刻,段位徽章、趋势图、近期对局一应俱全。',
+		href: 'https://naraka.yjwj.pro',
+		hint: 'naraka.yjwj.pro',
+		colorLight: '#047857',
+		colorDark: '#34d399',
+	},
+	{
+		name: '更多折腾',
+		desc: '发卡机器人、聚合工具站、监控告警、CI 流水线……大部分轮子都在 GitHub 上慢慢攒。',
+		href: GITHUB_URL,
+		hint: 'GitHub',
+		colorLight: '#c2410c',
+		colorDark: '#ff7b54',
+	},
+];
+
+const stacks = [
+	'Python / FastAPI / NoneBot2',
+	'TypeScript / Next.js / Astro',
+	'Java',
+	'SQLite / SQLAlchemy',
+	'Linux / Caddy / Docker',
+];
 ---
 
 <!doctype html>
@@ -14,59 +57,76 @@ import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 		<Header />
 		<main>
 			<section class="hero">
-				<h1>你好,我是 WuhuKaitou 👋</h1>
+				<div class="hero-bg" aria-hidden="true"></div>
+				<p class="hello">你好 👋 我是</p>
+				<h1 class="name">WuhuKaitou</h1>
 				<p class="tagline">
 					独立开发者。从 Java 起步,现在主要写 Python 和 TypeScript。
 					喜欢围绕游戏数据做产品:机器人、网站、后台,一个人从零到上线全包。
 				</p>
-			</section>
-
-			<section>
-				<h2>我在做什么</h2>
-				<div class="projects">
-					<a class="project-card" href="https://yjwj.pro" target="_blank" rel="noopener">
-						<h3>永劫无间数据平台</h3>
-						<p>
-							QQ 机器人 + Web 双端的游戏社区平台:Steam 查号、签到积分、商城、
-							社区论坛、管理后台,全套自研自运维。
-						</p>
-						<span class="link-hint">yjwj.pro →</span>
-					</a>
-					<a class="project-card" href="https://naraka.yjwj.pro" target="_blank" rel="noopener">
-						<h3>摸金战绩查询</h3>
-						<p>
-							永劫无间「无间镖客」模式的战绩查询独立站,照小程序 UI 复刻,
-							段位徽章、趋势图、近期对局一应俱全。
-						</p>
-						<span class="link-hint">naraka.yjwj.pro →</span>
-					</a>
-					<a class="project-card" href={GITHUB_URL} target="_blank" rel="noopener">
-						<h3>更多折腾</h3>
-						<p>
-							发卡机器人、聚合工具站、监控告警、CI 流水线……
-							大部分轮子都在 GitHub 上慢慢攒。
-						</p>
-						<span class="link-hint">GitHub →</span>
-					</a>
+				<p class="now"><span class="dot" aria-hidden="true"></span>正在折腾:永劫无间数据平台</p>
+				<div class="hero-actions">
+					<a class="btn primary" href="/blog">读文章</a>
+					<a class="btn ghost" href="/about">关于我</a>
+					<a class="btn ghost" href={GITHUB_URL} target="_blank" rel="noopener">GitHub</a>
 				</div>
 			</section>
 
-			<section>
-				<h2>技术栈</h2>
-				<ul class="stack">
-					<li>Python / FastAPI / NoneBot2</li>
-					<li>TypeScript / Next.js / Astro</li>
-					<li>Java</li>
-					<li>SQLite / SQLAlchemy</li>
-					<li>Linux / Caddy / Docker</li>
-				</ul>
+			<section class="block">
+				<div class="section-head">
+					<h2>最新文章</h2>
+					<a class="more" href="/blog">全部文章 →</a>
+				</div>
+				<ol class="post-list">
+					{
+						posts.map((post) => (
+							<li>
+								<a href={`/blog/${post.id}/`}>
+									<p class="post-meta">
+										<FormattedDate date={post.data.pubDate} /> · 约{' '}
+										{readingMinutes(post.body ?? '')} 分钟读完
+									</p>
+									<h3>{post.data.title}</h3>
+									<p class="post-desc">{post.data.description}</p>
+								</a>
+							</li>
+						))
+					}
+				</ol>
 			</section>
 
-			<section class="cta">
-				<p>
-					这里会记录我开发路上的踩坑与心得——欢迎去 <a href="/blog">文章</a> 页逛逛,
-					或到 <a href="/about">关于</a> 页进一步了解我。
-				</p>
+			<section class="block">
+				<div class="section-head">
+					<h2>我在做什么</h2>
+				</div>
+				<div class="projects">
+					{
+						projects.map((p) => (
+							<a
+								class="project-card"
+								href={p.href}
+								target="_blank"
+								rel="noopener"
+								style={`--card-accent-light: ${p.colorLight}; --card-accent-dark: ${p.colorDark}`}
+							>
+								<h3>{p.name}</h3>
+								<p>{p.desc}</p>
+								<span class="link-hint">
+									{p.hint} <span class="arrow">→</span>
+								</span>
+							</a>
+						))
+					}
+				</div>
+			</section>
+
+			<section class="block">
+				<div class="section-head">
+					<h2>技术栈</h2>
+				</div>
+				<ul class="stack">
+					{stacks.map((s) => <li>{s}</li>)}
+				</ul>
 			</section>
 		</main>
 		<Footer />
@@ -74,22 +134,185 @@ import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 </html>
 
 <style>
+	/* ---- Hero ---- */
 	.hero {
-		padding: 1em 0 0.5em;
+		position: relative;
+		padding: 3em 0 2.5em;
 	}
-	.hero h1 {
-		margin-bottom: 0.4em;
+	.hero-bg {
+		position: absolute;
+		inset: -2em 0 0;
+		pointer-events: none;
+		background-image:
+			radial-gradient(ellipse 60% 55% at 75% 12%, rgba(var(--gray), 0.18), transparent 70%),
+			linear-gradient(rgba(var(--gray), 0.14) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(var(--gray), 0.14) 1px, transparent 1px);
+		background-size:
+			100% 100%,
+			36px 36px,
+			36px 36px;
+		-webkit-mask-image: radial-gradient(ellipse 90% 85% at 40% 25%, #000 25%, transparent 78%);
+		mask-image: radial-gradient(ellipse 90% 85% at 40% 25%, #000 25%, transparent 78%);
+	}
+	.hero > :not(.hero-bg) {
+		position: relative;
+	}
+	.hello {
+		margin: 0 0 0.2em;
+		font-size: 1.1em;
+		color: rgb(var(--gray));
+	}
+	.name {
+		margin: 0 0 0.3em;
+		font-size: clamp(2.6em, 7vw, 4em);
+		background: var(--accent-grad);
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		color: var(--accent); /* 不支持 background-clip:text 时的兜底 */
+		width: fit-content;
 	}
 	.tagline {
+		max-width: 36em;
 		font-size: 1.15em;
 		color: rgb(var(--gray-dark));
+		margin-bottom: 0.8em;
 	}
+	.now {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		margin: 0 0 1.4em;
+		font-size: 0.92em;
+		color: rgb(var(--gray));
+	}
+	.dot {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: #34d399;
+		box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+	}
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.7em;
+	}
+	.btn {
+		display: inline-block;
+		padding: 0.55em 1.3em;
+		border-radius: 10px;
+		font-weight: 600;
+		text-decoration: none;
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease,
+			background-color 0.15s ease,
+			border-color 0.15s ease;
+	}
+	.btn.primary {
+		background: var(--accent);
+		color: var(--bg);
+	}
+	.btn.primary:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 6px 16px rgba(var(--gray), 0.4);
+	}
+	.btn.ghost {
+		border: 1px solid rgb(var(--gray-light));
+		color: rgb(var(--gray-dark));
+		background: var(--bg-surface);
+	}
+	.btn.ghost:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+		transform: translateY(-1px);
+	}
+
+	/* ---- 区块通用 ---- */
+	.block {
+		margin-top: 2.5em;
+	}
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1em;
+		margin-bottom: 0.9em;
+	}
+	.section-head h2 {
+		display: flex;
+		align-items: center;
+		gap: 0.45em;
+		margin: 0;
+		font-size: 1.55em;
+	}
+	.section-head h2::before {
+		content: '';
+		width: 26px;
+		height: 6px;
+		border-radius: 3px;
+		background: var(--accent-grad);
+	}
+	.more {
+		font-size: 0.95em;
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.more:hover {
+		text-decoration: underline;
+	}
+
+	/* ---- 最新文章 ---- */
+	.post-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.post-list li + li {
+		border-top: 1px solid rgb(var(--gray-light));
+	}
+	.post-list a {
+		display: block;
+		padding: 1em 0.9em;
+		border-radius: 12px;
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+	.post-list a:hover {
+		background: rgba(var(--gray-light), 0.45);
+	}
+	.post-meta {
+		margin: 0 0 0.25em;
+		font-size: 0.85em;
+		color: rgb(var(--gray));
+	}
+	.post-list h3 {
+		margin: 0 0 0.25em;
+		font-size: 1.2em;
+		color: rgb(var(--black));
+	}
+	.post-list a:hover h3 {
+		color: var(--accent);
+	}
+	.post-desc {
+		margin: 0;
+		font-size: 0.92em;
+		color: rgb(var(--gray-dark));
+	}
+
+	/* ---- 项目卡片 ---- */
 	.projects {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 		gap: 1em;
 	}
 	.project-card {
+		/* 亮色默认用深色系,暗色主题下切换为亮色系(见下方主题覆盖) */
+		--card-accent: var(--card-accent-light, var(--accent));
+		position: relative;
+		overflow: hidden;
 		display: block;
 		padding: 1.25em;
 		border: 1px solid rgb(var(--gray-light));
@@ -98,14 +321,27 @@ import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 		color: inherit;
 		background: var(--bg-surface);
 		box-shadow: 0 2px 6px rgba(var(--black), 5%);
-		transition: box-shadow 0.2s ease, transform 0.2s ease;
+		transition:
+			box-shadow 0.2s ease,
+			transform 0.2s ease,
+			border-color 0.2s ease;
+	}
+	.project-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: var(--card-accent, var(--accent));
 	}
 	.project-card:hover {
 		box-shadow: var(--box-shadow);
-		transform: translateY(-2px);
+		transform: translateY(-3px);
+		border-color: var(--card-accent, var(--accent));
 	}
 	.project-card h3 {
-		margin: 0 0 0.4em;
+		margin: 0.2em 0 0.4em;
 		font-size: 1.15em;
 		color: rgb(var(--black));
 	}
@@ -116,12 +352,30 @@ import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	}
 	.link-hint {
 		font-size: 0.9em;
-		color: var(--accent);
 		font-weight: 600;
+		color: var(--card-accent, var(--accent));
 	}
+	.arrow {
+		display: inline-block;
+		transition: transform 0.2s ease;
+	}
+	.project-card:hover .arrow {
+		transform: translateX(4px);
+	}
+	:global([data-theme='dark']) .project-card {
+		--card-accent: var(--card-accent-dark, var(--accent));
+	}
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme='light'])) .project-card {
+			--card-accent: var(--card-accent-dark, var(--accent));
+		}
+	}
+
+	/* ---- 技术栈 ---- */
 	.stack {
 		list-style: none;
 		padding: 0;
+		margin: 0;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.6em;
@@ -132,8 +386,52 @@ import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 		background: rgb(var(--gray-light));
 		font-size: 0.92em;
 		color: rgb(var(--gray-dark));
+		transition: transform 0.15s ease;
 	}
-	.cta {
-		margin-top: 1em;
+	.stack li:hover {
+		transform: translateY(-1px);
+	}
+
+	/* ---- 入场动效(尊重减动效偏好) ---- */
+	@media (prefers-reduced-motion: no-preference) {
+		.hero > :not(.hero-bg) {
+			animation: rise 0.55s ease both;
+		}
+		.hero > :nth-child(3) {
+			animation-delay: 0.06s;
+		}
+		.hero > :nth-child(4) {
+			animation-delay: 0.12s;
+		}
+		.hero > :nth-child(5) {
+			animation-delay: 0.18s;
+		}
+		.hero > :nth-child(6) {
+			animation-delay: 0.24s;
+		}
+		.dot {
+			animation: pulse 2.2s ease-out infinite;
+		}
+	}
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@keyframes pulse {
+		0% {
+			box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
+		}
+		70% {
+			box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+		}
 	}
 </style>

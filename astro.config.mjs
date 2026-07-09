@@ -13,6 +13,13 @@ export default defineConfig({
 			themes: { light: 'github-light', dark: 'github-dark' },
 		},
 	},
+	vite: {
+		build: {
+			// 降低 CSS 压缩目标,防止 esbuild 剥掉 -webkit-background-clip/-webkit-mask-image
+			// 等旧 Chromium(<120)/旧 Safari 仍必需的前缀(存量访客里有旧 Edge)
+			cssTarget: ['chrome87', 'edge88', 'firefox78', 'safari14'],
+		},
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),
